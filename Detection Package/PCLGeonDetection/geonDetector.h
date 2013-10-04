@@ -2,7 +2,7 @@
  * geonDetector.h
  *
  *  Created on: Jul 10, 2013
- *      Author: joey
+ *      Author: Shuyang Sheng
  */
 
 #include "std_include.h"

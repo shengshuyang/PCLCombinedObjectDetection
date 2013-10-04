@@ -1,0 +1,7 @@
+This is a wrapper for the RANSAC geometry primitive (geon) detector, it puts all things needed for geon detection into a call named "geonDetector", so you can initialize a detector, do preprocessing, and detect various types of geons supported by PCL with a single function call.
+
+A typical detection call is like:
+
+detector.detect(pcl::SACMODEL_CYLINDER);
+
+The detection is a new point cloud, stored as a member of the detector. You can pull it out by copying its pointer of course.
