@@ -3,3 +3,9 @@ CMakeFiles
 Makefile
 cmake_install.cmake
 install_manifest.txt
+
+#eclipe configuration files
+.metadata/
+
+#temporary files
+*~
