@@ -44,6 +44,8 @@
 pcdBuffer buff;
 bool isDone = false;
 boost::mutex ioMutex;
+int counter = 1;
+int max_num = 1;
 
 void grabberCallBack(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
 {
@@ -75,7 +77,7 @@ void grabAndSend()
 
 void writeToDisk(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
 {
-	static int counter = 1;
+	if(isDone) return;
 	pcl::PCDWriter w;
 	std::stringstream ss;
 	ss << counter;
@@ -84,6 +86,7 @@ void writeToDisk(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
 	std::string fname = prefix + ss.str() + ext; 
 	w.writeBinaryCompressed(fname, *cloud);
 	counter++;
+	if(counter > max_num) isDone = true;
 }
 
 // Consumer thread function
@@ -94,6 +97,7 @@ void receiveAndProcess()
 		if (isDone)
 			break;
 		writeToDisk(buff.getFront());
+		
 	}
 
 	{
@@ -115,12 +119,13 @@ void ctrl_C(int dummy)
 
 int main(int argc, char** argv)
 {
-	if (argc < 2)
+	if (argc < 3)
 	{
-		std::cerr << "Usage: " << argv[0] << " bufferSize " << std::endl;
+		std::cerr << "Usage: " << argv[0] << " bufferSize " << "maxNumber"<< std::endl;
 		exit(1);
 	}
 	int buffSize = atoi(argv[1]);
+	max_num = atoi(argv[2]);
 	buff.setCapacity(buffSize);
 	std::cout << "Starting the producer and consumer threads..." << std::endl;
 	std::cout << "Press Ctrl-C to end" << std::endl;
