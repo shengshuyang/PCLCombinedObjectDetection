@@ -7,7 +7,7 @@
 
 #include "std_include.h"
 
-typedef pcl::PointXYZ PointT;
+typedef pcl::PointXYZRGBA PointT;
 
 	class geonDetector
 	{

@@ -34,7 +34,7 @@ main (int argc, char** argv)
   det.findNormals();
 
   // Create the segmentation object for the planar model and set all the parameters
-
+  det.detect(pcl::SACMODEL_PLANE);
   det.detect(pcl::SACMODEL_CYLINDER);
 
 

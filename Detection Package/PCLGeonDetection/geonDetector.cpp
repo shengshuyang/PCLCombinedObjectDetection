@@ -11,7 +11,25 @@
 	void geonDetector::initialize()
 	{
 		totalCount = 0;
-		coefficients = new pcl::ModelCoefficients::Ptr;
+		pcl::PointCloud<PointT>::Ptr cloud1                       (new pcl::PointCloud<PointT>());
+		pcl::PointCloud<PointT>::Ptr cloud_filtered1           (new pcl::PointCloud<PointT>());
+		pcl::PointCloud<PointT>::Ptr cloud_filtered21         (new pcl::PointCloud<PointT>());
+		pcl::PointCloud<pcl::Normal>::Ptr cloud_normals1  (new pcl::PointCloud<pcl::Normal>());
+		pcl::PointCloud<pcl::Normal>::Ptr cloud_normals21 (new pcl::PointCloud<pcl::Normal>());
+		pcl::ModelCoefficients::Ptr coefficients1                   ( new pcl::ModelCoefficients());
+		pcl::PointIndices::Ptr geonIndices1                           (new pcl::PointIndices());
+		pcl::search::KdTree<PointT>::Ptr  tree2                     ( new pcl::search::KdTree<PointT>());
+
+
+		this->cloud                        = cloud1;
+		this->cloud_filtered            = cloud_filtered1;
+		this->cloud_normals          = cloud_normals1;		
+		this->cloud_filtered2          = cloud_filtered21;
+		this->cloud_normals2        = cloud_normals21;
+		this->coefficients              = coefficients1;
+		this->geonIndices             = geonIndices1;
+		this->tree                          =tree2;
+		
 	}
 	void geonDetector::setInputCloud(pcl::PointCloud<PointT>::Ptr input_cloud)
 	{
@@ -25,8 +43,8 @@
 	}
 	void geonDetector::preprocess()
 	{
-		this->cloud_normals = new pcl::PointCloud<pcl::Normal>();
-		this->tree = new pcl::search::KdTree<PointT>();
+		//this->cloud_normals = new pcl::PointCloud<pcl::Normal>();
+		//this->tree = new pcl::search::KdTree<PointT>();
 
 		  // Build a pass through filter to remove spurious NaNs
 		  pass.setInputCloud (cloud);
@@ -44,6 +62,77 @@
 		  ne.setKSearch (50);
 		  ne.compute (*cloud_normals);
 	}
+	
+std::string findTypeName( pcl::SacModel geonType)
+{
+	std::string str;
+		switch(geonType)
+		{
+			case pcl::SACMODEL_PLANE:
+				str = "SACMODEL_PLANE";
+				break;
+
+			case pcl::SACMODEL_LINE:
+			str = "SACMODEL_LINE";
+				break;
+			case pcl::SACMODEL_CIRCLE2D:
+			str = "SACMODEL_CIRCLE2D";
+				break;
+			case pcl::SACMODEL_CIRCLE3D:
+			str = "SACMODEL_CIRCLE3D";
+				break;
+			case pcl::SACMODEL_SPHERE:
+			str = "SACMODEL_SPHERE";
+				break;
+			case pcl::SACMODEL_CYLINDER:
+			str = "SACMODEL_CYLINDER";
+				break;
+			case pcl::SACMODEL_CONE:
+			str = "SACMODEL_CONE";
+				break;
+			case pcl::SACMODEL_TORUS:
+			str = "SACMODEL_TORUS";
+				break;
+			case pcl::SACMODEL_PARALLEL_LINE:
+			str = "SACMODEL_PARALLEL_LINE";
+				break;
+			case pcl::SACMODEL_PERPENDICULAR_PLANE:
+			str = "SACMODEL_PERPENDICULAR_PLANE";
+				break;
+			case pcl::SACMODEL_PARALLEL_LINES:
+			str = "SACMODEL_PARALLEL_LINES";
+				break;
+			case pcl::SACMODEL_NORMAL_PLANE:
+			str = "SACMODEL_NORMAL_PLANE";
+				break;
+			case pcl::SACMODEL_NORMAL_SPHERE:
+			str = "SACMODEL_NORMAL_SPHERE";
+				break;
+			case pcl::SACMODEL_REGISTRATION:
+			str = "SACMODEL_REGISTRATION";
+				break;
+			case pcl::SACMODEL_REGISTRATION_2D:
+			str = "SACMODEL_REGISTRATION_2D";
+				break;
+			case pcl::SACMODEL_PARALLEL_PLANE:
+			str = "SACMODEL_PARALLEL_PLANE";
+				break;
+			case pcl::SACMODEL_NORMAL_PARALLEL_PLANE:
+			str = "SACMODEL_NORMAL_PARALLEL_PLANE";
+				break;
+			case pcl::SACMODEL_STICK:
+			str = "SACMODEL_STICK";
+				break;
+		}
+		
+		return str;
+}
+	
+	
+	
+	
+	
+	
 	void geonDetector::detect(pcl::SacModel geonType)
 	{
 
@@ -87,59 +176,18 @@
 		  extract.filter (*cloud_geon);
 		  std::cerr << "PointCloud representing the planar component: " << cloud_geon->points.size () << " data points." << std::endl;
 
-		  std::string geonPath = geonType + (char)totalCount +".pcd";
+		  std::stringstream geonPath;
+		  geonPath << findTypeName(geonType) << "_" << totalCount  << ".pcd";
 
-		  writer.write (geonPath.c_str(), *cloud_geon, false);
-
+		  writer.write (geonPath.str().c_str(), *cloud_geon, false);
+		 // writer.write ("geon.pcd", *cloud_geon, false);
 
 		  //copy cloud_filtered2 to cloud_filtered
 		  pcl::copyPointCloud(*cloud_filtered2,*cloud_filtered);
 		  pcl::copyPointCloud(*cloud_normals2,*cloud_normals);
 
 
-		/*
-		switch(geonType)
-		{
-			case pcl::SACMODEL_PLANE:
-				seg.setModelType (pcl::SACMODEL_NORMAL_PLANE);
-				break;
 
-			case pcl::SACMODEL_LINE:
-				break;
-			case pcl::SACMODEL_CIRCLE2D:
-				break;
-			case pcl::SACMODEL_CIRCLE3D:
-				break;
-			case pcl::SACMODEL_SPHERE:
-				break;
-			case pcl::SACMODEL_CYLINDER:
-				break;
-			case pcl::SACMODEL_CONE:
-				break;
-			case pcl::SACMODEL_TORUS:
-				break;
-			case pcl::SACMODEL_PARALLEL_LINE:
-				break;
-			case pcl::SACMODEL_PERPENDICULAR_PLANE:
-				break;
-			case pcl::SACMODEL_PARALLEL_LINES:
-				break;
-			case pcl::SACMODEL_NORMAL_PLANE:
-				break;
-			case pcl::SACMODEL_NORMAL_SPHERE:
-				break;
-			case pcl::SACMODEL_REGISTRATION:
-				break;
-			case pcl::SACMODEL_REGISTRATION_2D:
-				break;
-			case pcl::SACMODEL_PARALLEL_PLANE:
-				break;
-			case pcl::SACMODEL_NORMAL_PARALLEL_PLANE:
-				break;
-			case pcl::SACMODEL_STICK:
-				break;
-		}
-		*/
 	}
 
 
