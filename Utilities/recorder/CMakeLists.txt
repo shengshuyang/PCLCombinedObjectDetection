@@ -2,12 +2,13 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 project(pcdBuffer)
 
-find_package(PCL 1.5 REQUIRED)
+find_package(PCL 1.7 REQUIRED)
 find_package(Boost COMPONENTS thread REQUIRED)
 
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
+set(DCMAKE_BUILD_TYPE Release)
 
 include_directories(${PCL_INCLUDE_DIRS})
 include_directories(${Boost_INCLUDE_DIR})

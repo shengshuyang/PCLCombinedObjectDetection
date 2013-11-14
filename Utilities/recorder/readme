@@ -1,0 +1,7 @@
+This is a recorder that takes certain amount of point clouds in fastest speed possible.
+
+Usage:	"pcdBufferRecorder  bufferSize   maxNumber Prefix"
+
+For example: "pcdBufferRecorder 20 10 box" will give you a buffer of 20 frames, and store 10 frames of point clouds with names "box1.pcd" through "box10.pcd".
+
+	

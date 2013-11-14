@@ -42,6 +42,7 @@
 #include "pcdBuffer.h"
 
 pcdBuffer buff;
+std::string prefix;
 bool isDone = false;
 boost::mutex ioMutex;
 int counter = 1;
@@ -81,7 +82,7 @@ void writeToDisk(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
 	pcl::PCDWriter w;
 	std::stringstream ss;
 	ss << counter;
-	std::string prefix = "input-";
+	//std::string prefix = "input-";
 	std::string ext = ".pcd";
 	std::string fname = prefix + ss.str() + ext; 
 	w.writeBinaryCompressed(fname, *cloud);
@@ -119,18 +120,20 @@ void ctrl_C(int dummy)
 
 int main(int argc, char** argv)
 {
-	if (argc < 3)
+	if (argc < 4)
 	{
-		std::cerr << "Usage: " << argv[0] << " bufferSize " << "maxNumber"<< std::endl;
+		std::cerr << "Usage: " << argv[0] << " bufferSize " << "maxNumber"<< "Prefix"<<std::endl;
 		exit(1);
 	}
 	int buffSize = atoi(argv[1]);
 	max_num = atoi(argv[2]);
+	prefix = argv[3];
+	
 	buff.setCapacity(buffSize);
 	std::cout << "Starting the producer and consumer threads..." << std::endl;
 	std::cout << "Press Ctrl-C to end" << std::endl;
 	boost::thread producer(grabAndSend);
-	boost::this_thread::sleep(boost::posix_time::seconds(2));
+	boost::this_thread::sleep(boost::posix_time::seconds(1));
 	boost::thread consumer(receiveAndProcess);
 	signal(SIGINT, ctrl_C);
 	producer.join();
