@@ -1,4 +1,4 @@
-For now it's a detector that detects edge that is "both high curvature edge and rgb edge".
+For now it's a detector that detects edge that uses a canny edge detection scheme to find edges that " is both high curvature edge and probably rgb edge".
 
 Later on these edges will be used to find shadow boundaries.
 
