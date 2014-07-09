@@ -6,7 +6,7 @@
 #include <pcl\point_types.h>
 #include <pcl\point_cloud.h>
 
-typedef pcl::PointXYZRGBA PointT;
+typedef pcl::PointXYZRGB PointT;
 
 class extremeFinder
 {

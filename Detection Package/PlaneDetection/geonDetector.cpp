@@ -37,6 +37,11 @@
 
 		n.normalize();
 		Eigen::Affine3f t1 = pcl::getTransformationFromTwoUnitVectors(Eigen::Vector3f(0,1,0),n);
+
+		std::ofstream ofs("transform.txt");
+		ofs << t1.matrix() << std::endl;
+		ofs.close();
+		
 		Eigen::Affine3f t2;
 		t2 = Eigen::AngleAxisf(90*PI/180,Eigen::Vector3f::UnitZ());
 		Eigen::Affine3f t3;
@@ -159,7 +164,7 @@ std::string findTypeName( pcl::SacModel geonType)
 		if(geonType == pcl::SACMODEL_PLANE)
 		{
 		  seg.setNormalDistanceWeight (0.5);
-		  seg.setDistanceThreshold (0.05);
+		  seg.setDistanceThreshold (0.08);
 		}
 		if(geonType == pcl::SACMODEL_CYLINDER)
 		{

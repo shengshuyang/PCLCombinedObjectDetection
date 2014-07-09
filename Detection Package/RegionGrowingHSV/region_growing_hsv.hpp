@@ -814,7 +814,7 @@ pcl::RegionGrowingHSV<PointT, NormalT>::writeClustersToFile(std::string path, st
 
 	std::vector<pcl::PointIndices>::iterator itr;
 	int i = 0;
-
+	int out_of_range_count = 0;
 	for(itr = clusters_.begin(); itr < clusters_.end();itr++)
 	{
 		std::vector<int>::iterator idx;
@@ -823,6 +823,12 @@ pcl::RegionGrowingHSV<PointT, NormalT>::writeClustersToFile(std::string path, st
 		double avg_label = 0;
   		for (idx = itr->indices.begin(); idx < itr->indices.end();idx++)
 		{
+			if (*idx >= plane_labels.size())
+			{
+				std::cout << "index out of range" << std::endl;
+				out_of_range_count++;
+				continue;
+			}
 			PointT p = input_->at(*idx);
 			center[0] += p.x;
 			center[1] += p.y;
@@ -831,9 +837,9 @@ pcl::RegionGrowingHSV<PointT, NormalT>::writeClustersToFile(std::string path, st
 			color[0] += p.h;
 			color[1] += p.s;
 			color[2] += p.v;
-
+			//TODO: add a out of boundary check
 			avg_label += plane_labels.at(*idx);
-		}
+		}  
 		center /= itr->indices.size();
 		color  /= itr->indices.size();
 		avg_label  /= itr->indices.size();
@@ -859,6 +865,8 @@ pcl::RegionGrowingHSV<PointT, NormalT>::writeClustersToFile(std::string path, st
 
 		i++;
 	}
+
+	std::cout << "index out of range count: " << out_of_range_count << std::endl;
 
 	of.close();
 	return (0);

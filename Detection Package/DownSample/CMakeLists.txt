@@ -9,6 +9,8 @@ add_definitions(${PCL_DEFINITIONS})
 
 SET( PROJECT_SRCS
 main.cpp
+extremeFinder.cpp
+extremeFinder.h
 
 )
 
