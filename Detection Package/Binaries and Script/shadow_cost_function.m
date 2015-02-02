@@ -48,23 +48,26 @@ for i = 1:N
     end
     if (has_non_plane_neighbour(i) == 1)
         non_plane_constraint = non_plane_constraint + x(i)*x(i);
+	else 
+        non_plane_constraint = non_plane_constraint + (1-x(i))*(1-x(i))/50;
     end
 end
 
 
 %(1) darker segments has higher possibility to be shadow
-t1 = 10*norm(x - value);
+% t1 = 300*norm(x - value - 0.33*ones(size(value)));
+t1 = 200*norm(x - value);
 %(2) regularizer to push labels towards 0 or 1
-t2 = 100*norm( x.*(ones(length(x),1) - x));
+t2 = 10*norm( x.*(ones(length(x),1) - x));
 %(3) avg. difference betw. the label of a segment and its neighbours.
-t3 = 10*norm(plane_labels.*pair);
+t3 = 80*norm(plane_labels.*pair);
 %(4) if a segment has a non plane neighbour, it has higher possibility to be a shadow
-t4 = 100*non_plane_constraint;
+t4 = 500*non_plane_constraint;
   
- y = t1 + t2 + t4;
-
- if( randi(100,1,1,'uint32') == 1)
- disp(y);
- end
+ y = t1 + t3 + t4;
+ % y=t4;
+ if( randi(10,1,1,'uint32') == 1)
+ str = sprintf('%.2f + %.2f + %.2f + %.2f = %.2f',t1, t2, t3, t4, y);
+ disp(str);
 end
 

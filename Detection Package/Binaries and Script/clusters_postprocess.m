@@ -1,8 +1,12 @@
 clear all;
-%% find nearest neighbour for each cluster center
+%% preprocessing cluster data
 c = load('clusters_statistics.txt',' ');
-
+N = size(c,1);
+% temp is storing connection information
 temp = c(:,9:18);
+% -1 was used to represent no neighbour. setting them to -2 then add temp
+% by 1 will add an offset to the neighbour indices. That's because in C++
+% the indices starts from zero, and we must offset by one here.
 temp(temp == -1) = -2;
 temp = temp +1;
 c(:,9:18)= temp;
@@ -11,13 +15,29 @@ c(:,9:18)= temp;
 %     temp(temp==-1) = i;
 %     c(i,:) = temp;
 % end
+
+% switch coordinates
 c = [c(:,1) c(:,3) c(:,2) c(:,4:18)];
 save('c.mat','c');
 
 % structure of c: [ x y z h s v plane_label size neighbours]
-% colormap('prism');
-% scatter3(c(:,1),c(:,2),c(:,3),c(:,8)/50,c(:,7),'filled');
 
+% colormap('prism');
+% scatter3(c(:,1),c(:,2),c(:,3),max(c(:,8)/50, 10),c(:,7),'filled');
+% for i = 1:N
+%     for j = 9:18
+%         if c(i,j) > 0 && c(i,7) == 0
+%             idx = c(i,j);
+%             x = [ c(i,1) c(idx,1)];
+%             y = [ c(i,2) c(idx,2)];
+%             z = [ c(i,3) c(idx,3)];
+%             hold on;
+%             plot3(x,y,z);
+%         end
+%         
+%     end
+% end
+ 
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % for each cluster, we check cdf wrt its cluster center color value, 
@@ -45,8 +65,9 @@ labels  = binornd(1,p)';
 % scatter3(c(:,1),c(:,2),c(:,3),c(:,8)/50,255*c(:,7),'filled');   
 %%
 options = optimset('MaxIter',10);
-x = fmincon(@shadow_cost_function,labels,[],[],[],[],...
-    zeros(length(labels),1),1.1*ones(length(labels),1),[],options);
+% x = fmincon(@shadow_cost_function,labels,[],[],[],[],...
+%     zeros(length(labels),1),1.1*ones(length(labels),1),[],options);
+x = fminunc(@shadow_cost_function,labels,options);
 xx = round(x);
 
 for i = 1:1:length(xx)
@@ -54,6 +75,8 @@ for i = 1:1:length(xx)
         xx(i) = 2;
     end
 end
+
+%%
 colormap('prism');
 scatter3(c(:,1),c(:,2),c(:,3),c(:,8)/50,xx,'filled');
 labels = xx;
@@ -68,7 +91,7 @@ fclose(fid);
 %note: 1 means bright and not shadow, 0 means shadow. 2 means its part of
 %the object
 
-%quit()
+quit()
 
 
 
