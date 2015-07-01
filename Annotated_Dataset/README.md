@@ -10,7 +10,9 @@ The data:
 The dataset currently contains 40 scenes, each scene comes with 3 files:
 
   *_downsampled.pcd
+  
   *_rgb.png
+  
   *_z.png
 
 the PCD file is a point cloud collected using a Kinect sensor, with outlier points removed in a downsampling process. The two PNG files are the rgb and depth channel, respectively, converted from the PCD file with a tool provided by PCL.

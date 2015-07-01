@@ -2,7 +2,11 @@
 % Define the root folder for the images
 HOMEIMAGES = '.\USC_SHADOW\Images'; % you can set here your default folder
 HOMEANNOTATIONS = '.\USC_SHADOW\Annotations'; % you can set here your default folder
+
+% choose one of the two sets by commenting out the other one
 folderlist = {'users/shengshuyang//usc_table_top'};
+% folderlist = {'users/shengshuyang//nyu_depth_shadow'};
+
 LMinstall (folderlist, HOMEIMAGES, HOMEANNOTATIONS);
 D = LMdatabase(HOMEANNOTATIONS);
 
